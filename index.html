@@ -62,7 +62,9 @@
 
       if (color === "rainbow") {
         document.body.style.background = "linear-gradient(135deg, red, orange, yellow, green, blue, indigo, violet)";
-        document.body.style.color = "#222";
+        document.body.style.backgroundSize = "100% 100%";
+        document.body.style.backgroundRepeat = "no-repeat";
+        document.body.style.color = "#111";
         feedback.textContent = "🌈 Rainbow mode activated! Taste the colors.";
         return;
       }
