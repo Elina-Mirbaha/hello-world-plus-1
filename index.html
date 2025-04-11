@@ -104,12 +104,17 @@
     <option value="dark-academia">Dark Academia</option>
   </select>
   <br>
+  <button onclick= "showPopUP()" > ClickMe </button>
   <button onclick="applyAesthetic()">Submit</button>
   <button onclick="resetTheme()">Reset</button>
 
   <p id="feedback"></p>
 
   <script>
+    function showPopUp() {
+      alert("Welcome to the Aesthetic World!");
+    }
+
     function applyAesthetic() {
       const aesthetic = document.getElementById("aestheticSelect").value;
       const message = document.getElementById("message");
@@ -119,7 +124,7 @@
         feedback.textContent = "Please choose an aesthetic!";
         return;
       }
-
+      
       document.body.classList.remove("fade-in");
       document.body.classList.add("fade-out");
 
