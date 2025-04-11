@@ -104,14 +104,16 @@
     <option value="dark-academia">Dark Academia</option>
   </select>
   <br>
-  <button onclick= "showPopUp" > ClickMe </button>
+  <button onclick= "showPopUp()" > ClickMe </button>
   <button onclick="applyAesthetic()">Submit</button>
   <button onclick="resetTheme()">Reset</button>
 
   <p id="feedback"></p>
 
   <script>
-    const showPopUp = () => { alert(`Hello, everyone`); };
+    function showPopUp() {
+      const showPopUp = () => { alert(`Welcome!`); };
+    }
 
     function applyAesthetic() {
       const aesthetic = document.getElementById("aestheticSelect").value;
