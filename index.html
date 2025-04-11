@@ -15,49 +15,44 @@
       min-height: 100vh;
       overflow-x: hidden;
       opacity: 1;
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
     }
 
     body.fade-out {
       opacity: 0;
-      transition: opacity 0.6s ease;
+      transition: opacity 0.5s ease;
     }
 
     body.fade-in {
       opacity: 1;
-      transition: opacity 0.6s ease;
+      transition: opacity 0.5s ease;
     }
 
-    .aesthetic::before {
-      content: "";
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw;
-      height: 100vh;
-      background-size: 400% 400%;
-      animation: shimmer 15s ease infinite;
-      z-index: -1;
-    }
-
-    @keyframes shimmer {
+    @keyframes gradientBG {
       0% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
     }
 
-    body.pastel.aesthetic::before {
-      background: linear-gradient(270deg, #ffd1dc, #ffe8b6, #d0f4de, #c1e1ff, #d6c8f0, #f5c0e7);
+    body.pastel {
+      background: linear-gradient(-45deg, #ffd1dc, #ffe8b6, #d0f4de, #c1e1ff);
+      color: #333;
     }
 
-    body.gothic.aesthetic::before {
-      background: linear-gradient(270deg, #1a1a1a, #2e2e2e, #4b0082, #3a3a3a, #000000);
+    body.gothic {
+      background: linear-gradient(-45deg, #1a1a1a, #2e2e2e, #4b0082, #3a3a3a);
+      color: #e0e0e0;
     }
 
-    body.minimalist.aesthetic::before {
-      background: linear-gradient(270deg, #ffffff, #f6f6f6, #eeeeee, #fafafa, #fefefe);
+    body.minimalist {
+      background: linear-gradient(-45deg, #ffffff, #f6f6f6, #eeeeee, #fafafa);
+      color: #111;
     }
 
-    body.dark-academia.aesthetic::before {
-      background: linear-gradient(270deg, #3e2f1c, #5a4a36, #8b6f47, #d1bfa7, #b59d83);
+    body.dark-academia {
+      background: linear-gradient(-45deg, #3e2f1c, #5a4a36, #8b6f47, #d1bfa7);
+      color: #2b1e15;
     }
 
     h1 {
@@ -88,17 +83,6 @@
       font-size: 20px;
       font-weight: bold;
     }
-
-    .audio-toggle {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      font-size: 14px;
-      background: #eee;
-      border-radius: 8px;
-      padding: 5px 10px;
-      cursor: pointer;
-    }
   </style>
 </head>
 <body>
@@ -117,90 +101,36 @@
 
   <p id="feedback"></p>
 
-  <div class="audio-toggle" onclick="toggleAudio()">🔈 Mute</div>
-
-  <!-- Audio Files -->
-  <audio id="aestheticAudio" preload="auto">
-    <source id="audioSource" src="" type="audio/mp3">
-    Your browser does not support the audio element.
-  </audio>
-
   <script>
-    const audioTracks = {
-      "pastel": "https://cdn.pixabay.com/download/audio/2022/03/15/audio_9b4244f35b.mp3",
-      "gothic": "https://cdn.pixabay.com/download/audio/2022/01/19/audio_3f487f76a4.mp3",
-      "minimalist": "https://cdn.pixabay.com/download/audio/2022/03/15/audio_bf9245f33f.mp3",
-      "dark-academia": "https://cdn.pixabay.com/download/audio/2023/06/28/audio_3bce265fe2.mp3"
-    };
-
-    let isMuted = false;
-
     function applyAesthetic() {
       const aesthetic = document.getElementById("aestheticSelect").value;
       const message = document.getElementById("message");
       const feedback = document.getElementById("feedback");
-      const audio = document.getElementById("aestheticAudio");
-      const source = document.getElementById("audioSource");
 
       if (!aesthetic) {
         feedback.textContent = "Please choose an aesthetic!";
         return;
       }
 
-      // Fade out
       document.body.classList.remove("fade-in");
       document.body.classList.add("fade-out");
 
       setTimeout(() => {
-        document.body.className = '';
-        document.body.classList.add("aesthetic", aesthetic, "fade-in");
+        document.body.className = aesthetic + " fade-in";
 
         const title = aesthetic.replace("-", " ");
         message.textContent = `Hello ${toTitleCase(title)} World!`;
-
-        if (aesthetic === "gothic") {
-          document.body.style.color = "#e0e0e0";
-        } else if (aesthetic === "minimalist") {
-          document.body.style.color = "#111";
-        } else if (aesthetic === "dark-academia") {
-          document.body.style.color = "#2b1e15";
-        } else {
-          document.body.style.color = "#333";
-        }
-
         feedback.textContent = `You've entered ${toTitleCase(title)} mode ✨`;
-
-        // Load and play audio
-        if (audioTracks[aesthetic]) {
-          source.src = audioTracks[aesthetic];
-          audio.load();
-          if (!isMuted) {
-            audio.play().catch(() => {});
-          }
-        }
-      }, 500);
+      }, 400);
     }
 
     function resetTheme() {
       document.body.className = '';
-      document.body.style.background = "white";
+      document.body.style.background = "";
       document.body.style.color = "black";
       document.getElementById("message").textContent = "Hello World! 🌍";
       document.getElementById("feedback").textContent = "";
       document.getElementById("aestheticSelect").selectedIndex = 0;
-      document.getElementById("aestheticAudio").pause();
-    }
-
-    function toggleAudio() {
-      const audio = document.getElementById("aestheticAudio");
-      isMuted = !isMuted;
-      if (isMuted) {
-        audio.pause();
-        document.querySelector(".audio-toggle").textContent = "🔇 Unmute";
-      } else {
-        audio.play().catch(() => {});
-        document.querySelector(".audio-toggle").textContent = "🔈 Mute";
-      }
     }
 
     function toTitleCase(str) {
