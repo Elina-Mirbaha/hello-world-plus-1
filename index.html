@@ -14,6 +14,17 @@
       z-index: 0;
       min-height: 100vh;
       overflow-x: hidden;
+      opacity: 1;
+    }
+
+    body.fade-out {
+      opacity: 0;
+      transition: opacity 0.6s ease;
+    }
+
+    body.fade-in {
+      opacity: 1;
+      transition: opacity 0.6s ease;
     }
 
     .aesthetic::before {
@@ -25,12 +36,6 @@
       background-size: 400% 400%;
       animation: shimmer 15s ease infinite;
       z-index: -1;
-      opacity: 0;
-      animation: fadeIn 2s forwards, shimmer 15s ease infinite;
-    }
-
-    @keyframes fadeIn {
-      to { opacity: 1; }
     }
 
     @keyframes shimmer {
@@ -39,22 +44,6 @@
       100% { background-position: 0% 50%; }
     }
 
-    /* Animated Text Color */
-    .animated-text {
-      background: linear-gradient(270deg, #ff9a9e, #fad0c4, #a18cd1, #fbc2eb, #8fd3f4, #84fab0);
-      background-size: 600% 600%;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: colorShift 10s ease infinite;
-    }
-
-    @keyframes colorShift {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-
-    /* Aesthetic Backgrounds */
     body.pastel.aesthetic::before {
       background: linear-gradient(270deg, #ffd1dc, #ffe8b6, #d0f4de, #c1e1ff, #d6c8f0, #f5c0e7);
     }
@@ -69,6 +58,16 @@
 
     body.dark-academia.aesthetic::before {
       background: linear-gradient(270deg, #3e2f1c, #5a4a36, #8b6f47, #d1bfa7, #b59d83);
+    }
+
+    h1 {
+      font-size: 3em;
+      animation: wave 2s ease-in-out infinite;
+    }
+
+    @keyframes wave {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
     }
 
     select, button {
@@ -88,8 +87,6 @@
       margin-top: 20px;
       font-size: 20px;
       font-weight: bold;
-      opacity: 0;
-      animation: fadeIn 1s forwards;
     }
 
     .audio-toggle {
@@ -105,7 +102,7 @@
   </style>
 </head>
 <body>
-  <h1 id="message" class="animated-text">Hello World! 🌍</h1>
+  <h1 id="message">Hello World! 🌍</h1>
 
   <select id="aestheticSelect">
     <option value="" disabled selected>Pick your aesthetic!</option>
@@ -123,17 +120,17 @@
   <div class="audio-toggle" onclick="toggleAudio()">🔈 Mute</div>
 
   <!-- Audio Files -->
-  <audio id="aestheticAudio" loop autoplay>
+  <audio id="aestheticAudio" preload="auto">
     <source id="audioSource" src="" type="audio/mp3">
     Your browser does not support the audio element.
   </audio>
 
   <script>
     const audioTracks = {
-      "pastel": "https://cdn.pixabay.com/download/audio/2022/03/15/audio_9b4244f35b.mp3",       // soft vibe
-      "gothic": "https://cdn.pixabay.com/download/audio/2022/01/19/audio_3f487f76a4.mp3",       // ambient dark
-      "minimalist": "https://cdn.pixabay.com/download/audio/2022/03/15/audio_bf9245f33f.mp3",   // light piano
-      "dark-academia": "https://cdn.pixabay.com/download/audio/2023/06/28/audio_3bce265fe2.mp3" // moody strings
+      "pastel": "https://cdn.pixabay.com/download/audio/2022/03/15/audio_9b4244f35b.mp3",
+      "gothic": "https://cdn.pixabay.com/download/audio/2022/01/19/audio_3f487f76a4.mp3",
+      "minimalist": "https://cdn.pixabay.com/download/audio/2022/03/15/audio_bf9245f33f.mp3",
+      "dark-academia": "https://cdn.pixabay.com/download/audio/2023/06/28/audio_3bce265fe2.mp3"
     };
 
     let isMuted = false;
@@ -150,31 +147,38 @@
         return;
       }
 
-      document.body.className = '';
-      document.body.classList.add("aesthetic", aesthetic);
-      const title = aesthetic.replace("-", " ");
-      message.textContent = `Hello ${toTitleCase(title)} World!`;
+      // Fade out
+      document.body.classList.remove("fade-in");
+      document.body.classList.add("fade-out");
 
-      if (aesthetic === "gothic") {
-        document.body.style.color = "#e0e0e0";
-      } else if (aesthetic === "minimalist") {
-        document.body.style.color = "#111";
-      } else if (aesthetic === "dark-academia") {
-        document.body.style.color = "#2b1e15";
-      } else {
-        document.body.style.color = "#333";
-      }
+      setTimeout(() => {
+        document.body.className = '';
+        document.body.classList.add("aesthetic", aesthetic, "fade-in");
 
-      message.classList.add("animated-text");
-      feedback.textContent = `You've entered ${toTitleCase(title)} mode ✨`;
-      feedback.style.opacity = "1";
+        const title = aesthetic.replace("-", " ");
+        message.textContent = `Hello ${toTitleCase(title)} World!`;
 
-      // Change audio
-      if (audioTracks[aesthetic]) {
-        source.src = audioTracks[aesthetic];
-        audio.load();
-        if (!isMuted) audio.play();
-      }
+        if (aesthetic === "gothic") {
+          document.body.style.color = "#e0e0e0";
+        } else if (aesthetic === "minimalist") {
+          document.body.style.color = "#111";
+        } else if (aesthetic === "dark-academia") {
+          document.body.style.color = "#2b1e15";
+        } else {
+          document.body.style.color = "#333";
+        }
+
+        feedback.textContent = `You've entered ${toTitleCase(title)} mode ✨`;
+
+        // Load and play audio
+        if (audioTracks[aesthetic]) {
+          source.src = audioTracks[aesthetic];
+          audio.load();
+          if (!isMuted) {
+            audio.play().catch(() => {});
+          }
+        }
+      }, 500);
     }
 
     function resetTheme() {
@@ -183,13 +187,8 @@
       document.body.style.color = "black";
       document.getElementById("message").textContent = "Hello World! 🌍";
       document.getElementById("feedback").textContent = "";
-      document.getElementById("feedback").style.opacity = 0;
       document.getElementById("aestheticSelect").selectedIndex = 0;
       document.getElementById("aestheticAudio").pause();
-    }
-
-    function toTitleCase(str) {
-      return str.split(" ").map(word => word[0].toUpperCase() + word.slice(1)).join(" ");
     }
 
     function toggleAudio() {
@@ -199,9 +198,13 @@
         audio.pause();
         document.querySelector(".audio-toggle").textContent = "🔇 Unmute";
       } else {
-        audio.play();
+        audio.play().catch(() => {});
         document.querySelector(".audio-toggle").textContent = "🔈 Mute";
       }
+    }
+
+    function toTitleCase(str) {
+      return str.split(" ").map(word => word[0].toUpperCase() + word.slice(1)).join(" ");
     }
   </script>
 </body>
