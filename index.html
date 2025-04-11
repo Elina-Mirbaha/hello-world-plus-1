@@ -3,17 +3,62 @@
 <head>
   <meta charset="UTF-8">
   <title>Hello World Plus One</title>
+  <style>
+    body {
+      transition: background-color 0.5s, color 0.5s;
+      text-align: center;
+      font-family: sans-serif;
+      padding-top: 100px;
+    }
+    select, button {
+      padding: 8px;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+    #feedback {
+      margin-top: 20px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
-  <h1 id="message">Hello World!</h1> <!-- added ! -->
+  <h1 id="message">Hello World! 🌍</h1>
 
-  <input id="userInput" type="text" placeholder="Type something..." />
-  <button onclick="updateMessage()">Submit</button>
+  <p>Pick your favorite color:</p>
+  <select id="colorSelect">
+    <option value="blue">Blue</option>
+    <option value="pink">Pink</option>
+    <option value="green">Green</option>
+    <option value="purple">Purple</option>
+    <option value="yellow">Yellow</option>
+    <option value="orange">Orange</option>
+    <option value="red">Red</option>
+  </select>
+  <br>
+  <button onclick="changeTheme()">Submit</button>
+
+  <p id="feedback"></p>
 
   <script>
-    function updateMessage() {
-      const input = document.getElementById("userInput").value;
-      document.getElementById("message").textContent = "You said: " + input;
+    function changeTheme() {
+      const color = document.getElementById("colorSelect").value;
+      const feedback = document.getElementById("feedback");
+
+      const colorMap = {
+        blue: ["#d0e8ff", "#003366"],
+        pink: ["#ffe0ef", "#a0005b"],
+        green: ["#dafbe1", "#174e26"],
+        purple: ["#f0e6ff", "#4b0082"],
+        yellow: ["#fff9d6", "#8a7200"],
+        orange: ["#ffe8cc", "#b34700"],
+        red: ["#ffd6d6", "#8b0000"],
+      };
+
+      const [bg, text] = colorMap[color];
+      document.body.style.backgroundColor = bg;
+      document.body.style.color = text;
+      feedback.textContent = `Nice! The page is now themed with ${color}.`;
     }
   </script>
 </body>
