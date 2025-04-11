@@ -2,12 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Hello World Plus One</title>
+  <title>Hello World Aesthetics</title>
   <style>
     body {
       text-align: center;
-      font-family: sans-serif;
+      font-family: 'Georgia', serif;
       padding-top: 100px;
+      margin: 0;
       transition: background 1s ease, color 1s ease;
       position: relative;
       z-index: 0;
@@ -15,15 +16,15 @@
       overflow-x: hidden;
     }
 
-    body.rainbow::before {
+    /* Shared animated background template */
+    .aesthetic::before {
       content: "";
       position: fixed;
       top: 0; left: 0;
       width: 100vw;
       height: 100vh;
-      background: linear-gradient(270deg, red, orange, yellow, green, blue, indigo, violet);
-      background-size: 400% 400%;
-      animation: shimmer 10s ease infinite;
+      background-size: 600% 600%;
+      animation: shimmer 15s ease infinite;
       z-index: -1;
     }
 
@@ -31,6 +32,46 @@
       0% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
+    }
+
+    /* Aesthetic backgrounds */
+    body.pastel.aesthetic::before {
+      background: linear-gradient(
+        270deg,
+        #ffd1dc, #ffe8b6, #d0f4de, #c1e1ff, #d6c8f0, #f5c0e7
+      );
+    }
+
+    body.gothic.aesthetic::before {
+      background: linear-gradient(
+        270deg,
+        #1a1a1a, #2e2e2e, #4b0082, #3a3a3a, #000000
+      );
+    }
+
+    body.minimalist.aesthetic::before {
+      background: linear-gradient(
+        270deg,
+        #ffffff, #f6f6f6, #eeeeee, #fefefe
+      );
+    }
+
+    body.dark-academia.aesthetic::before {
+      background: linear-gradient(
+        270deg,
+        #3e2f1c, #5a4a36, #8b6f47, #d1bfa7, #b59d83
+      );
+    }
+
+    /* Text styles */
+    h1 {
+      font-size: 3em;
+      animation: wave 2s ease-in-out infinite;
+    }
+
+    @keyframes wave {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
     }
 
     select, button {
@@ -51,65 +92,65 @@
 <body>
   <h1 id="message">Hello World! 🌍</h1>
 
-  <select id="colorSelect">
-    <option value="" disabled selected>Pick your color!</option>
-    <option value="blue">Blue</option>
-    <option value="pink">Pink</option>
-    <option value="green">Green</option>
-    <option value="purple">Purple</option>
-    <option value="yellow">Yellow</option>
-    <option value="orange">Orange</option>
-    <option value="red">Red</option>
-    <option value="rainbow">Rainbow 🌈</option>
+  <select id="aestheticSelect">
+    <option value="" disabled selected>Pick your aesthetic!</option>
+    <option value="pastel">Pastel</option>
+    <option value="gothic">Gothic</option>
+    <option value="minimalist">Minimalist</option>
+    <option value="dark-academia">Dark Academia</option>
   </select>
   <br>
-  <button onclick="changeTheme()">Submit</button>
+  <button onclick="applyAesthetic()">Submit</button>
   <button onclick="resetTheme()">Reset</button>
 
   <p id="feedback"></p>
 
   <script>
-    function changeTheme() {
-      const select = document.getElementById("colorSelect");
-      const color = select.value;
+    function applyAesthetic() {
+      const aesthetic = document.getElementById("aestheticSelect").value;
+      const message = document.getElementById("message");
       const feedback = document.getElementById("feedback");
 
-      if (!color) {
-        feedback.textContent = "Please choose a color from the dropdown!";
+      if (!aesthetic) {
+        feedback.textContent = "Please choose an aesthetic!";
         return;
       }
 
-      const colorMap = {
-        blue: ["#d0e8ff", "#003366"],
-        pink: ["#ffe0ef", "#a0005b"],
-        green: ["#dafbe1", "#174e26"],
-        purple: ["#f0e6ff", "#4b0082"],
-        yellow: ["#fff9d6", "#8a7200"],
-        orange: ["#ffe8cc", "#b34700"],
-        red: ["#ffd6d6", "#8b0000"]
-      };
+      // Reset all aesthetic classes
+      document.body.className = '';
 
-      if (color === "rainbow") {
-        document.body.classList.add("rainbow");
-        document.body.style.background = "none";
+      // Apply new classes
+      document.body.classList.add("aesthetic", aesthetic);
+
+      // Update heading
+      const title = aesthetic.replace("-", " ");
+      message.textContent = `Hello ${toTitleCase(title)} World!`;
+
+      // Set text color depending on aesthetic
+      if (aesthetic === "gothic") {
+        document.body.style.color = "#e0e0e0";
+      } else if (aesthetic === "minimalist") {
         document.body.style.color = "#111";
-        feedback.textContent = "🌈 Rainbow mode activated! Taste the colors.";
-        return;
+      } else if (aesthetic === "dark-academia") {
+        document.body.style.color = "#2b1e15";
+      } else {
+        document.body.style.color = "#333";
       }
 
-      const [bg, text] = colorMap[color];
-      document.body.classList.remove("rainbow");
-      document.body.style.background = bg;
-      document.body.style.color = text;
-      feedback.textContent = `Nice! The page is now themed with ${color}.`;
+      feedback.textContent = `You've entered ${toTitleCase(title)} mode ✨`;
     }
 
     function resetTheme() {
-      document.body.classList.remove("rainbow");
+      document.body.className = '';
       document.body.style.background = "white";
       document.body.style.color = "black";
+      document.getElementById("message").textContent = "Hello World! 🌍";
       document.getElementById("feedback").textContent = "";
-      document.getElementById("colorSelect").selectedIndex = 0;
+      document.getElementById("aestheticSelect").selectedIndex = 0;
+    }
+
+    function toTitleCase(str) {
+      return str.split(" ").map(word => word[0].toUpperCase() + word.slice(1)).join(" ");
     }
   </script>
 </body>
