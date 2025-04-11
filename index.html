@@ -5,15 +5,17 @@
   <title>Hello World Plus One</title>
   <style>
     body {
-      transition: background-color 0.5s, color 0.5s;
       text-align: center;
       font-family: sans-serif;
       padding-top: 100px;
+      transition: background 1s ease, color 1s ease;
     }
     select, button {
-      padding: 8px;
+      padding: 10px;
       font-size: 16px;
-      margin-top: 10px;
+      margin: 10px;
+      border-radius: 8px;
+      border: none;
     }
     #feedback {
       margin-top: 20px;
@@ -25,7 +27,7 @@
 <body>
   <h1 id="message">Hello World! 🌍</h1>
 
-  <p>Pick your favorite color:</p>
+  <p>Pick your favorite color theme:</p>
   <select id="colorSelect">
     <option value="blue">Blue</option>
     <option value="pink">Pink</option>
@@ -34,9 +36,11 @@
     <option value="yellow">Yellow</option>
     <option value="orange">Orange</option>
     <option value="red">Red</option>
+    <option value="rainbow">Rainbow 🌈</option>
   </select>
   <br>
   <button onclick="changeTheme()">Submit</button>
+  <button onclick="resetTheme()">Reset</button>
 
   <p id="feedback"></p>
 
@@ -44,6 +48,7 @@
     function changeTheme() {
       const color = document.getElementById("colorSelect").value;
       const feedback = document.getElementById("feedback");
+      const message = document.getElementById("message");
 
       const colorMap = {
         blue: ["#d0e8ff", "#003366"],
@@ -52,13 +57,27 @@
         purple: ["#f0e6ff", "#4b0082"],
         yellow: ["#fff9d6", "#8a7200"],
         orange: ["#ffe8cc", "#b34700"],
-        red: ["#ffd6d6", "#8b0000"],
+        red: ["#ffd6d6", "#8b0000"]
       };
 
+      if (color === "rainbow") {
+        document.body.style.background = "linear-gradient(135deg, red, orange, yellow, green, blue, indigo, violet)";
+        document.body.style.color = "#222";
+        feedback.textContent = "🌈 Rainbow mode activated! Taste the colors.";
+        return;
+      }
+
       const [bg, text] = colorMap[color];
-      document.body.style.backgroundColor = bg;
+      document.body.style.background = bg;
       document.body.style.color = text;
       feedback.textContent = `Nice! The page is now themed with ${color}.`;
+    }
+
+    function resetTheme() {
+      document.body.style.background = "white";
+      document.body.style.color = "black";
+      document.getElementById("feedback").textContent = "";
+      document.getElementById("colorSelect").selectedIndex = 0;
     }
   </script>
 </body>
