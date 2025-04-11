@@ -16,16 +16,21 @@
       overflow-x: hidden;
     }
 
-    /* Shared animated background template */
     .aesthetic::before {
       content: "";
       position: fixed;
       top: 0; left: 0;
       width: 100vw;
       height: 100vh;
-      background-size: 600% 600%;
+      background-size: 400% 400%;
       animation: shimmer 15s ease infinite;
       z-index: -1;
+      opacity: 0;
+      animation: fadeIn 2s forwards, shimmer 15s ease infinite;
+    }
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
     }
 
     @keyframes shimmer {
@@ -34,44 +39,36 @@
       100% { background-position: 0% 50%; }
     }
 
-    /* Aesthetic backgrounds */
+    /* Animated Text Color */
+    .animated-text {
+      background: linear-gradient(270deg, #ff9a9e, #fad0c4, #a18cd1, #fbc2eb, #8fd3f4, #84fab0);
+      background-size: 600% 600%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: colorShift 10s ease infinite;
+    }
+
+    @keyframes colorShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Aesthetic Backgrounds */
     body.pastel.aesthetic::before {
-      background: linear-gradient(
-        270deg,
-        #ffd1dc, #ffe8b6, #d0f4de, #c1e1ff, #d6c8f0, #f5c0e7
-      );
+      background: linear-gradient(270deg, #ffd1dc, #ffe8b6, #d0f4de, #c1e1ff, #d6c8f0, #f5c0e7);
     }
 
     body.gothic.aesthetic::before {
-      background: linear-gradient(
-        270deg,
-        #1a1a1a, #2e2e2e, #4b0082, #3a3a3a, #000000
-      );
+      background: linear-gradient(270deg, #1a1a1a, #2e2e2e, #4b0082, #3a3a3a, #000000);
     }
 
     body.minimalist.aesthetic::before {
-      background: linear-gradient(
-        270deg,
-        #ffffff, #f6f6f6, #eeeeee, #fefefe
-      );
+      background: linear-gradient(270deg, #ffffff, #f6f6f6, #eeeeee, #fafafa, #fefefe);
     }
 
     body.dark-academia.aesthetic::before {
-      background: linear-gradient(
-        270deg,
-        #3e2f1c, #5a4a36, #8b6f47, #d1bfa7, #b59d83
-      );
-    }
-
-    /* Text styles */
-    h1 {
-      font-size: 3em;
-      animation: wave 2s ease-in-out infinite;
-    }
-
-    @keyframes wave {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-8px); }
+      background: linear-gradient(270deg, #3e2f1c, #5a4a36, #8b6f47, #d1bfa7, #b59d83);
     }
 
     select, button {
@@ -80,17 +77,35 @@
       margin: 10px;
       border-radius: 8px;
       border: none;
+      transition: all 0.3s ease;
+    }
+
+    select:focus, button:hover {
+      transform: scale(1.05);
     }
 
     #feedback {
       margin-top: 20px;
       font-size: 20px;
       font-weight: bold;
+      opacity: 0;
+      animation: fadeIn 1s forwards;
+    }
+
+    .audio-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      font-size: 14px;
+      background: #eee;
+      border-radius: 8px;
+      padding: 5px 10px;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <h1 id="message">Hello World! 🌍</h1>
+  <h1 id="message" class="animated-text">Hello World! 🌍</h1>
 
   <select id="aestheticSelect">
     <option value="" disabled selected>Pick your aesthetic!</option>
@@ -105,28 +120,41 @@
 
   <p id="feedback"></p>
 
+  <div class="audio-toggle" onclick="toggleAudio()">🔈 Mute</div>
+
+  <!-- Audio Files -->
+  <audio id="aestheticAudio" loop autoplay>
+    <source id="audioSource" src="" type="audio/mp3">
+    Your browser does not support the audio element.
+  </audio>
+
   <script>
+    const audioTracks = {
+      "pastel": "https://cdn.pixabay.com/download/audio/2022/03/15/audio_9b4244f35b.mp3",       // soft vibe
+      "gothic": "https://cdn.pixabay.com/download/audio/2022/01/19/audio_3f487f76a4.mp3",       // ambient dark
+      "minimalist": "https://cdn.pixabay.com/download/audio/2022/03/15/audio_bf9245f33f.mp3",   // light piano
+      "dark-academia": "https://cdn.pixabay.com/download/audio/2023/06/28/audio_3bce265fe2.mp3" // moody strings
+    };
+
+    let isMuted = false;
+
     function applyAesthetic() {
       const aesthetic = document.getElementById("aestheticSelect").value;
       const message = document.getElementById("message");
       const feedback = document.getElementById("feedback");
+      const audio = document.getElementById("aestheticAudio");
+      const source = document.getElementById("audioSource");
 
       if (!aesthetic) {
         feedback.textContent = "Please choose an aesthetic!";
         return;
       }
 
-      // Reset all aesthetic classes
       document.body.className = '';
-
-      // Apply new classes
       document.body.classList.add("aesthetic", aesthetic);
-
-      // Update heading
       const title = aesthetic.replace("-", " ");
       message.textContent = `Hello ${toTitleCase(title)} World!`;
 
-      // Set text color depending on aesthetic
       if (aesthetic === "gothic") {
         document.body.style.color = "#e0e0e0";
       } else if (aesthetic === "minimalist") {
@@ -137,7 +165,16 @@
         document.body.style.color = "#333";
       }
 
+      message.classList.add("animated-text");
       feedback.textContent = `You've entered ${toTitleCase(title)} mode ✨`;
+      feedback.style.opacity = "1";
+
+      // Change audio
+      if (audioTracks[aesthetic]) {
+        source.src = audioTracks[aesthetic];
+        audio.load();
+        if (!isMuted) audio.play();
+      }
     }
 
     function resetTheme() {
@@ -146,11 +183,25 @@
       document.body.style.color = "black";
       document.getElementById("message").textContent = "Hello World! 🌍";
       document.getElementById("feedback").textContent = "";
+      document.getElementById("feedback").style.opacity = 0;
       document.getElementById("aestheticSelect").selectedIndex = 0;
+      document.getElementById("aestheticAudio").pause();
     }
 
     function toTitleCase(str) {
       return str.split(" ").map(word => word[0].toUpperCase() + word.slice(1)).join(" ");
+    }
+
+    function toggleAudio() {
+      const audio = document.getElementById("aestheticAudio");
+      isMuted = !isMuted;
+      if (isMuted) {
+        audio.pause();
+        document.querySelector(".audio-toggle").textContent = "🔇 Unmute";
+      } else {
+        audio.play();
+        document.querySelector(".audio-toggle").textContent = "🔈 Mute";
+      }
     }
   </script>
 </body>
